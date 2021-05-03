@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+
+{% block practice %}
+<ul class="navi">
+    <li class="navg"><a class="active" href="/certain/{{ id }}">Материал</a></li>
+    <li class="navg"><a href="/practice/{{ id }}">Практика</a></li>
+</ul>
+
+{% if current_user.is_authenticated %}
+{% if form  %}
+<h1 align="center">Тест по теме: "{{ title }}"</h1>
+<div class="material">
+    {% for item in form%}
+    <div class="question" id="test">
+        <h3>Задание {{ item }}. {{ form[item]['question'] }}</h3>
+        <form data-right="{{ form[item]['answer'] }}">
+        {% for variant in form[item]["variants"] %}
+            <label><input type="radio" name="{{ item }}" data-answer-num="{{ loop.index0 + 1 }}"> {{ variant }}</label>
+            <br>
+        {% endfor %}
+        </form>
+        <br>
+    </div>
+    {% endfor %}
+    <button class="btn btn-primary" id="button">Check</button>
+
+{% else %}
+    <h1 align="center">Упражнение не добалено</h1>
+{% endif %}
+
+</div>
+{% else %}
+<h1 align="center">Авторизируйтесь, чтобы пройти тест</h1>
+{% endif %}
+
+<script>
+    let button = document.querySelector('#button');
+
+    button.addEventListener('click', function() {
+        let forms = document.querySelectorAll('#test form');
+        let i = 0
+        let j = 0
+
+        for (let form of forms) {
+            form.classList.remove('correct')
+            form.classList.remove('incorrect')
+
+            let inputs = form.querySelectorAll('input');
+            for (let input of inputs){
+                if (input.checked) {
+                    if (input.dataset.answerNum == form.dataset.right) {
+                        form.classList.add('correct')
+                        i++;
+                    } else {
+                        form.classList.add('incorrect')
+                    }
+                    break;
+                }
+
+            }
+        j++;
+        }
+    alert("Ваш результат " + i + " из " + j)
+    });
+</script>
+{% endblock %}
